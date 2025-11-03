@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prof Zulum AI Institute</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBympRK02_ZsNEXnZIand6SYXARDc94VBU",
+            authDomain: "prof-ai-zulum-portal.firebaseapp.com",
+            projectId: "prof-ai-zulum-portal",
+            storageBucket: "prof-ai-zulum-portal.firebasestorage.app",
+            messagingSenderId: "712010867639",
+            appId: "1:712010867639:web:158a33da9dd8114061fe32",
+            measurementId: "G-0V8G0173GY"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Make Firebase available globally
+        window.firebase = { app, analytics, auth, db, storage };
+    </script>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="screen">
+        <div class="splash-container">
+            <div class="splash-top">Prof Zulum AI Institute</div>
+            <div class="splash-middle">POWERED BY NEXUS FORGE</div>
+            <div class="splash-bottom">Empowering Future AI Leaders</div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen hidden">
+        <div class="login-header">
+            <div class="logo">Prof Zulum AI</div>
+        </div>
+        <div class="login-container">
+            <div class="login-card">
+                <h2>Welcome Back</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <input type="text" id="username" placeholder="Username" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+                <div id="login-error" class="error-message hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Dashboard -->
+    <div id="student-dashboard" class="screen hidden">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>Student Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <span id="student-name">Welcome, Student</span>
+                <button id="student-logout" class="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <nav class="dashboard-nav">
+            <ul class="nav-tabs">
+                <li class="nav-tab active" data-tab="exams">Exams</li>
+                <li class="nav-tab" data-tab="ca-test">C.A Test</li>
+                <li class="nav-tab" data-tab="payment-status">Payment Status</li>
+                <li class="nav-tab" data-tab="online-payment">Online Payment</li>
+                <li class="nav-tab" data-tab="payment-history">Payment History</li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-main">
+            <!-- Exams Tab -->
+            <div id="exams" class="tab-content active">
+                <div class="tab-header">
+                    <h2>Computer Appreciation Examination</h2>
+                </div>
+                <div id="exam-status" class="status-card">
+                    <p>No available exams at the moment. Please check back later.</p>
+                </div>
+                <div id="exam-container" class="hidden">
+                    <div class="exam-header">
+                        <div class="timer" id="exam-timer">30:00</div>
+                        <button id="submit-exam" class="submit-btn">Submit Exam</button>
+                    </div>
+                    <div id="exam-questions" class="questions-container"></div>
+                </div>
+            </div>
+
+            <!-- C.A Test Tab -->
+            <div id="ca-test" class="tab-content">
+                <div class="tab-header">
+                    <h2>Computer Appreciation Test</h2>
+                </div>
+                <div id="ca-status" class="status-card">
+                    <p>No available C.A Test at the moment. Please check back later.</p>
+                </div>
+                <div id="ca-container" class="hidden">
+                    <div class="exam-header">
+                        <div class="timer" id="ca-timer">20:00</div>
+                        <button id="submit-ca" class="submit-btn">Submit Test</button>
+                    </div>
+                    <div id="ca-questions" class="questions-container"></div>
+                </div>
+            </div>
+
+            <!-- Payment Status Tab -->
+            <div id="payment-status" class="tab-content">
+                <div class="tab-header">
+                    <h2>Payment Status</h2>
+                </div>
+                <div id="payment-status-content" class="status-card">
+                    <p>Your payment status will appear here once confirmed by admin.</p>
+                </div>
+            </div>
+
+            <!-- Online Payment Tab -->
+            <div id="online-payment" class="tab-content">
+                <div class="tab-header">
+                    <h2>Online Payment</h2>
+                </div>
+                <div class="payment-card">
+                    <div class="payment-details">
+                        <h3>Payment Information</h3>
+                        <div class="account-details">
+                            <p><strong>Account Name:</strong> GAJIMI ALI MAKINTA</p>
+                            <p><strong>Bank Name:</strong> MONIE POINT</p>
+                            <p><strong>Account Number:</strong> 6464698253</p>
+                        </div>
+                        <button id="pay-now-btn" class="pay-btn">Pay Now</button>
+                    </div>
+                    <div id="payment-form" class="hidden">
+                        <h3>Submit Payment Details</h3>
+                        <form id="transaction-form">
+                            <div class="form-group">
+                                <label for="transaction-id">Transaction Reference ID</label>
+                                <input type="text" id="transaction-id" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="amount-paid">Amount Paid</label>
+                                <input type="number" id="amount-paid" required>
+                            </div>
+                            <button type="submit" class="submit-btn">Submit Payment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History Tab -->
+            <div id="payment-history" class="tab-content">
+                <div class="tab-header">
+                    <h2>Payment History</h2>
+                </div>
+                <div id="payment-history-content">
+                    <p>No payment history available.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="screen hidden">
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>Admin Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <span>Welcome, Admin</span>
+                <button id="admin-logout" class="logout-btn">Logout</button>
+            </div>
+        </header>
+
+        <nav class="dashboard-nav">
+            <ul class="nav-tabs">
+                <li class="nav-tab active" data-tab="user-management">User Management</li>
+                <li class="nav-tab" data-tab="exam-management">Exam Management</li>
+                <li class="nav-tab" data-tab="payment-management">Payment Management</li>
+            </ul>
+        </nav>
+
+        <main class="dashboard-main">
+            <!-- User Management Tab -->
+            <div id="user-management" class="tab-content active">
+                <div class="admin-section">
+                    <h3>Create New User</h3>
+                    <form id="create-user-form" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-username">Student ID (Username)</label>
+                                <input type="text" id="new-username" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="new-fullname">Full Name</label>
+                                <input type="text" id="new-fullname" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="new-password">Password</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-image">Profile Image (Optional)</label>
+                                <input type="file" id="user-image" accept="image/*">
+                            </div>
+                        </div>
+                        <button type="submit" class="submit-btn">Create User</button>
+                    </form>
+                </div>
+
+                <div class="admin-section">
+                    <h3>User List</h3>
+                    <div id="user-list" class="data-list"></div>
+                </div>
+            </div>
+
+            <!-- Exam Management Tab -->
+            <div id="exam-management" class="tab-content">
+                <div class="admin-section">
+                    <h3>Exam Controls</h3>
+                    <div class="control-panel">
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="enable-exams">
+                                Enable Exams for All Students
+                            </label>
+                        </div>
+                        <div class="control-item">
+                            <label>
+                                <input type="checkbox" id="enable-ca-test">
+                                Enable C.A Test for All Students
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>Student Exam Status</h3>
+                    <div id="exam-status-list" class="data-list"></div>
+                </div>
+            </div>
+
+            <!-- Payment Management Tab -->
+            <div id="payment-management" class="tab-content">
+                <div class="admin-section">
+                    <h3>Pending Payment Requests</h3>
+                    <div id="pending-payments" class="data-list"></div>
+                </div>
+
+                <div class="admin-section">
+                    <h3>Payment History</h3>
+                    <div id="all-payments" class="data-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="payment-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment Instructions</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="payment-instructions">
+                    <p>Please transfer the payment to the following account details:</p>
+                    <div class="account-info">
+                        <p><strong>Account Name:</strong> GAJIMI ALI MAKINTA</p>
+                        <p><strong>Bank Name:</strong> MONIE POINT</p>
+                        <p><strong>Account Number:</strong> 6464698253</p>
+                    </div>
+                    <p>After completing the transfer, click "I Have Transferred" and enter your transaction details.</p>
+                </div>
+                <button id="transferred-btn" class="submit-btn">I Have Transferred</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
