@@ -161,7 +161,7 @@ async function handleLogin(e) {
         }
         
         // Demo student login
-        if (username === 'student1' && password === 'password') {
+        if (username === 'student1' && password === 'password123') {
             console.log("Demo student login successful");
             currentUser = { 
                 uid: 'student1', 
@@ -226,7 +226,7 @@ async function checkUserRole(uid) {
 async function handleLogout() {
     if (isFirebaseReady && window.firebaseAuth) {
         const { signOut } = await import('https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js');
-        signOut(window.firebaseAuth);
+        await signOut(window.firebaseAuth);
     }
     currentUser = null;
     showScreen('login');
@@ -284,8 +284,33 @@ function loadExamQuestions() {
             question: "What is the primary function of an operating system?",
             options: ["Run applications", "Manage hardware resources", "Create documents", "Browse the internet"],
             correctAnswer: 1
+        },
+        {
+            question: "Which of these is NOT an operating system?",
+            options: ["Windows", "Linux", "Microsoft Office", "macOS"],
+            correctAnswer: 2
+        },
+        {
+            question: "What is the smallest unit of data in computing?",
+            options: ["Byte", "Bit", "Kilobyte", "Megabyte"],
+            correctAnswer: 1
+        },
+        {
+            question: "Which component is known as the brain of the computer?",
+            options: ["RAM", "Hard Drive", "CPU", "Motherboard"],
+            correctAnswer: 2
+        },
+        {
+            question: "What does URL stand for?",
+            options: ["Uniform Resource Locator", "Universal Resource Link", "Uniform Resource Link", "Universal Resource Locator"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which of these is a web browser?",
+            options: ["Windows Explorer", "Google Chrome", "Microsoft Word", "Adobe Reader"],
+            correctAnswer: 1
         }
-        // Add more questions as needed...
+        // Add 40 more computer introduction questions...
     ];
     
     // Microsoft Office (20 questions)
@@ -314,8 +339,33 @@ function loadExamQuestions() {
             question: "Which function in Excel adds up a range of cells?",
             options: ["TOTAL", "ADD", "SUM", "CALCULATE"],
             correctAnswer: 2
+        },
+        {
+            question: "In Word, which feature allows you to see changes made to a document?",
+            options: ["Track Changes", "Review Mode", "Edit Tracking", "Change Log"],
+            correctAnswer: 0
+        },
+        {
+            question: "What is the purpose of the 'Slide Master' in PowerPoint?",
+            options: ["Create animations", "Design slide layouts", "Add transitions", "Record narration"],
+            correctAnswer: 1
+        },
+        {
+            question: "Which Excel feature allows you to display data visually?",
+            options: ["Formulas", "Charts", "Filters", "PivotTables"],
+            correctAnswer: 1
+        },
+        {
+            question: "In Word, what is the shortcut to save a document?",
+            options: ["Ctrl+S", "Ctrl+P", "Ctrl+N", "Ctrl+O"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which view in Excel shows the worksheet without gridlines and headers?",
+            options: ["Normal", "Page Layout", "Page Break", "Full Screen"],
+            correctAnswer: 1
         }
-        // Add more questions as needed...
+        // Add 10 more Office questions...
     ];
     
     examQuestions = [...computerIntroQuestions, ...officeQuestions];
@@ -349,8 +399,33 @@ function loadCAQuestions() {
             question: "Which Microsoft application is used for presentations?",
             options: ["Word", "Excel", "PowerPoint", "Access"],
             correctAnswer: 2
+        },
+        {
+            question: "What is the function of the ALU in a CPU?",
+            options: ["Store data", "Control operations", "Perform calculations", "Manage memory"],
+            correctAnswer: 2
+        },
+        {
+            question: "Which of these is an output device?",
+            options: ["Mouse", "Scanner", "Printer", "Keyboard"],
+            correctAnswer: 2
+        },
+        {
+            question: "What does PDF stand for?",
+            options: ["Portable Document Format", "Personal Data File", "Printed Document File", "Public Document Format"],
+            correctAnswer: 0
+        },
+        {
+            question: "Which key is used to delete text to the right of the cursor?",
+            options: ["Backspace", "Delete", "Shift", "Enter"],
+            correctAnswer: 1
+        },
+        {
+            question: "What is the purpose of an operating system?",
+            options: ["Create documents", "Manage computer resources", "Browse the internet", "Play games"],
+            correctAnswer: 1
         }
-        // Add more questions as needed...
+        // Add 20 more C.A test questions...
     ];
     shuffleArray(caQuestions);
 }
@@ -360,6 +435,7 @@ function shuffleArray(array) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+    return array;
 }
 
 // Exam Management
@@ -643,6 +719,10 @@ async function toggleExams(e) {
             enabled: enabled,
             updatedAt: serverTimestamp()
         });
+        
+        // Show immediate feedback
+        const status = enabled ? 'enabled' : 'disabled';
+        console.log(`Exams ${status} for all students`);
     } catch (error) {
         console.error('Error updating exam settings:', error);
     }
@@ -658,6 +738,10 @@ async function toggleCATest(e) {
             enabled: enabled,
             updatedAt: serverTimestamp()
         });
+        
+        // Show immediate feedback
+        const status = enabled ? 'enabled' : 'disabled';
+        console.log(`C.A Test ${status} for all students`);
     } catch (error) {
         console.error('Error updating CA test settings:', error);
     }
@@ -970,17 +1054,24 @@ function handleKeyboardNavigation(e) {
     // Answer selection (a, b, c, d)
     if (key >= 'a' && key <= 'd') {
         e.preventDefault();
-        const optionIndex = key.charCodeAt(0) - 97; // a=0, b=1, etc.
-        // This would need additional logic to track current question
-        console.log(`Selected option ${key.toUpperCase()}`);
+        const activeQuestion = document.querySelector('.question-card:not(.hidden)');
+        if (activeQuestion) {
+            const optionIndex = key.charCodeAt(0) - 97; // a=0, b=1, etc.
+            const options = activeQuestion.querySelectorAll('.option');
+            if (options[optionIndex]) {
+                options[optionIndex].click();
+            }
+        }
     }
     
     // Navigation (p for previous, n for next)
     if (key === 'p') {
         e.preventDefault();
+        // Navigate to previous question
         console.log('Previous question');
     } else if (key === 'n') {
         e.preventDefault();
+        // Navigate to next question
         console.log('Next question');
     }
 }
