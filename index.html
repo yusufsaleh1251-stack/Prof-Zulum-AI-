@@ -33,7 +33,17 @@
         const storage = getStorage(app);
 
         // Make Firebase available globally
-        window.firebase = { app, analytics, auth, db, storage };
+        window.firebaseApp = app;
+        window.firebaseAuth = auth;
+        window.firebaseDb = db;
+        window.firebaseStorage = storage;
+        
+        console.log("Firebase initialized successfully");
+        
+        // Let the main script know Firebase is ready
+        if (window.firebaseReady) {
+            window.firebaseReady();
+        }
     </script>
 </head>
 <body>
