@@ -10,14 +10,8 @@ let isFirebaseReady = false;
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing app...");
     
-    // Set up event listeners that don't depend on Firebase
-    setupBasicEventListeners();
-    
-    // Show splash screen for 4 seconds then login - this will happen regardless of Firebase
-    setTimeout(() => {
-        console.log("Splash screen timeout completed");
-        showScreen('login');
-    }, 4000);
+    // Set up event listeners
+    setupEventListeners();
     
     // Check if Firebase is already loaded
     if (window.firebaseAuth) {
@@ -30,24 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("Firebase ready callback called");
             initializeFirebaseApp();
         };
-        
-        // Fallback: if Firebase doesn't load in 5 seconds, proceed anyway
-        setTimeout(() => {
-            if (!isFirebaseReady) {
-                console.log("Firebase loading timeout - proceeding without Firebase");
-                showScreen('login');
-            }
-        }, 5000);
     }
 });
 
-function setupBasicEventListeners() {
-    // Basic navigation that doesn't need Firebase
+function setupEventListeners() {
+    // Login form
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', handleLogin);
+    }
+    
+    // Logout buttons
+    const studentLogout = document.getElementById('student-logout');
+    const adminLogout = document.getElementById('admin-logout');
+    if (studentLogout) studentLogout.addEventListener('click', handleLogout);
+    if (adminLogout) adminLogout.addEventListener('click', handleLogout);
+    
+    // Navigation tabs
     document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.addEventListener('click', handleTabChange);
     });
     
-    // Payment modal (basic functionality)
+    // Payment modal
     const payBtn = document.getElementById('pay-now-btn');
     const closeModal = document.querySelector('.close-modal');
     const transferredBtn = document.getElementById('transferred-btn');
@@ -55,6 +53,12 @@ function setupBasicEventListeners() {
     if (payBtn) payBtn.addEventListener('click', showPaymentModal);
     if (closeModal) closeModal.addEventListener('click', hidePaymentModal);
     if (transferredBtn) transferredBtn.addEventListener('click', showPaymentForm);
+    
+    // Payment form
+    const transactionForm = document.getElementById('transaction-form');
+    if (transactionForm) {
+        transactionForm.addEventListener('submit', handlePaymentSubmission);
+    }
 }
 
 function initializeFirebaseApp() {
@@ -81,24 +85,6 @@ function initializeFirebaseApp() {
 }
 
 function setupFirebaseEventListeners() {
-    // Login form
-    const loginForm = document.getElementById('login-form');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    }
-    
-    // Logout buttons
-    const studentLogout = document.getElementById('student-logout');
-    const adminLogout = document.getElementById('admin-logout');
-    if (studentLogout) studentLogout.addEventListener('click', handleLogout);
-    if (adminLogout) adminLogout.addEventListener('click', handleLogout);
-    
-    // Payment form
-    const transactionForm = document.getElementById('transaction-form');
-    if (transactionForm) {
-        transactionForm.addEventListener('submit', handlePaymentSubmission);
-    }
-    
     // Admin functionality
     const createUserForm = document.getElementById('create-user-form');
     const enableExams = document.getElementById('enable-exams');
@@ -123,7 +109,6 @@ function setupFirebaseEventListeners() {
 function showScreen(screenName) {
     console.log("Showing screen:", screenName);
     const screens = {
-        splash: document.getElementById('splash-screen'),
         login: document.getElementById('login-screen'),
         student: document.getElementById('student-dashboard'),
         admin: document.getElementById('admin-dashboard')
@@ -175,6 +160,23 @@ async function handleLogin(e) {
             return;
         }
         
+        // Demo student login
+        if (username === 'student1' && password === 'password') {
+            console.log("Demo student login successful");
+            currentUser = { 
+                uid: 'student1', 
+                email: 'student1@zulumai.com', 
+                role: 'student',
+                displayName: 'Demo Student'
+            };
+            const studentNameElement = document.getElementById('student-name');
+            if (studentNameElement) {
+                studentNameElement.textContent = `Welcome, Demo Student`;
+            }
+            showScreen('student');
+            return;
+        }
+        
         // Regular user login - requires Firebase
         if (!isFirebaseReady) {
             throw new Error('System is initializing. Please try again in a moment.');
@@ -221,7 +223,7 @@ async function checkUserRole(uid) {
     }
 }
 
-function handleLogout() {
+async function handleLogout() {
     if (isFirebaseReady && window.firebaseAuth) {
         const { signOut } = await import('https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js');
         signOut(window.firebaseAuth);
@@ -254,7 +256,7 @@ function handleTabChange(e) {
     }
 }
 
-// Question Management (No Firebase dependency)
+// Question Management
 function loadExamQuestions() {
     // Computer Introduction & Windows (50 questions)
     const computerIntroQuestions = [
@@ -273,6 +275,16 @@ function loadExamQuestions() {
             options: ["Random Access Memory", "Read Access Memory", "Random Available Memory", "Read Available Memory"],
             correctAnswer: 0
         },
+        {
+            question: "Which key is used to create a new folder in Windows?",
+            options: ["Ctrl+N", "Ctrl+Shift+N", "Alt+N", "Shift+N"],
+            correctAnswer: 1
+        },
+        {
+            question: "What is the primary function of an operating system?",
+            options: ["Run applications", "Manage hardware resources", "Create documents", "Browse the internet"],
+            correctAnswer: 1
+        }
         // Add more questions as needed...
     ];
     
@@ -288,6 +300,21 @@ function loadExamQuestions() {
             options: ["Home", "Insert", "Data", "View"],
             correctAnswer: 2
         },
+        {
+            question: "In PowerPoint, which view shows thumbnails of all slides?",
+            options: ["Normal view", "Slide Sorter", "Reading view", "Notes view"],
+            correctAnswer: 1
+        },
+        {
+            question: "What is the default file extension for Word documents?",
+            options: [".txt", ".docx", ".pdf", ".xlsx"],
+            correctAnswer: 1
+        },
+        {
+            question: "Which function in Excel adds up a range of cells?",
+            options: ["TOTAL", "ADD", "SUM", "CALCULATE"],
+            correctAnswer: 2
+        }
         // Add more questions as needed...
     ];
     
@@ -308,6 +335,21 @@ function loadCAQuestions() {
             options: ["ROM", "RAM", "Hard Disk", "CD-ROM"],
             correctAnswer: 1
         },
+        {
+            question: "What does URL stand for?",
+            options: ["Uniform Resource Locator", "Universal Resource Link", "Uniform Resource Link", "Universal Resource Locator"],
+            correctAnswer: 0
+        },
+        {
+            question: "In Windows, which key combination opens the Task Manager?",
+            options: ["Ctrl+Alt+Del", "Ctrl+Shift+Esc", "Alt+F4", "Windows Key+R"],
+            correctAnswer: 1
+        },
+        {
+            question: "Which Microsoft application is used for presentations?",
+            options: ["Word", "Excel", "PowerPoint", "Access"],
+            correctAnswer: 2
+        }
         // Add more questions as needed...
     ];
     shuffleArray(caQuestions);
@@ -726,22 +768,26 @@ async function loadAdminData() {
         if (userList) {
             userList.innerHTML = '';
             
-            usersSnapshot.forEach(doc => {
-                const user = doc.data();
-                const userElement = document.createElement('div');
-                userElement.className = 'data-item';
-                userElement.innerHTML = `
-                    <div class="data-info">
-                        <h4>${user.fullName}</h4>
-                        <p>Username: ${user.username} | Role: ${user.role}</p>
-                    </div>
-                    <div class="data-actions">
-                        <button class="action-btn btn-warning" onclick="resetExam('${doc.id}')">Reset Exam</button>
-                        <button class="action-btn btn-danger" onclick="deleteUser('${doc.id}')">Delete</button>
-                    </div>
-                `;
-                userList.appendChild(userElement);
-            });
+            if (usersSnapshot.empty) {
+                userList.innerHTML = '<div class="empty-state"><p>No users created yet. Create your first user above.</p></div>';
+            } else {
+                usersSnapshot.forEach(doc => {
+                    const user = doc.data();
+                    const userElement = document.createElement('div');
+                    userElement.className = 'data-item';
+                    userElement.innerHTML = `
+                        <div class="data-info">
+                            <h4>${user.fullName}</h4>
+                            <p>Username: ${user.username} | Role: ${user.role}</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="action-btn btn-warning" onclick="resetExam('${doc.id}')">Reset Exam</button>
+                            <button class="action-btn btn-danger" onclick="deleteUser('${doc.id}')">Delete</button>
+                        </div>
+                    `;
+                    userList.appendChild(userElement);
+                });
+            }
         }
         
         // Load settings
@@ -771,24 +817,28 @@ async function loadAdminData() {
         if (pendingContainer) {
             pendingContainer.innerHTML = '';
             
-            pendingPaymentsSnapshot.forEach(doc => {
-                const payment = doc.data();
-                const paymentElement = document.createElement('div');
-                paymentElement.className = 'data-item';
-                paymentElement.innerHTML = `
-                    <div class="data-info">
-                        <h4>${payment.userName}</h4>
-                        <p>Amount: ₦${payment.amount} | Transaction: ${payment.transactionId}</p>
-                        <p>Date: ${payment.timestamp?.toDate().toLocaleDateString()}</p>
-                    </div>
-                    <div class="data-actions">
-                        <button class="action-btn btn-success" onclick="confirmPayment('${doc.id}', 'complete')">Complete</button>
-                        <button class="action-btn btn-warning" onclick="confirmPayment('${doc.id}', 'partial')">Partial</button>
-                        <button class="action-btn btn-danger" onclick="rejectPayment('${doc.id}')">Reject</button>
-                    </div>
-                `;
-                pendingContainer.appendChild(paymentElement);
-            });
+            if (pendingPaymentsSnapshot.empty) {
+                pendingContainer.innerHTML = '<div class="empty-state"><p>No pending payment requests.</p></div>';
+            } else {
+                pendingPaymentsSnapshot.forEach(doc => {
+                    const payment = doc.data();
+                    const paymentElement = document.createElement('div');
+                    paymentElement.className = 'data-item';
+                    paymentElement.innerHTML = `
+                        <div class="data-info">
+                            <h4>${payment.userName}</h4>
+                            <p>Amount: ₦${payment.amount} | Transaction: ${payment.transactionId}</p>
+                            <p>Date: ${payment.timestamp?.toDate().toLocaleDateString()}</p>
+                        </div>
+                        <div class="data-actions">
+                            <button class="action-btn btn-success" onclick="confirmPayment('${doc.id}', 'complete')">Complete</button>
+                            <button class="action-btn btn-warning" onclick="confirmPayment('${doc.id}', 'partial')">Partial</button>
+                            <button class="action-btn btn-danger" onclick="rejectPayment('${doc.id}')">Reject</button>
+                        </div>
+                    `;
+                    pendingContainer.appendChild(paymentElement);
+                });
+            }
         }
         
         // Load all payments
@@ -802,23 +852,27 @@ async function loadAdminData() {
         if (allPaymentsContainer) {
             allPaymentsContainer.innerHTML = '';
             
-            allPaymentsSnapshot.forEach(doc => {
-                const payment = doc.data();
-                let statusClass = 'status-pending';
-                if (payment.status === 'complete') statusClass = 'status-complete';
-                if (payment.status === 'partial') statusClass = 'status-partial';
-                
-                const paymentElement = document.createElement('div');
-                paymentElement.className = `data-item ${statusClass}`;
-                paymentElement.innerHTML = `
-                    <div class="data-info">
-                        <h4>${payment.userName}</h4>
-                        <p>Amount: ₦${payment.amount} | Status: ${payment.status.toUpperCase()}</p>
-                        <p>Transaction: ${payment.transactionId} | Date: ${payment.timestamp?.toDate().toLocaleDateString()}</p>
-                    </div>
-                `;
-                allPaymentsContainer.appendChild(paymentElement);
-            });
+            if (allPaymentsSnapshot.empty) {
+                allPaymentsContainer.innerHTML = '<div class="empty-state"><p>No payment history available.</p></div>';
+            } else {
+                allPaymentsSnapshot.forEach(doc => {
+                    const payment = doc.data();
+                    let statusClass = 'status-pending';
+                    if (payment.status === 'complete') statusClass = 'status-complete';
+                    if (payment.status === 'partial') statusClass = 'status-partial';
+                    
+                    const paymentElement = document.createElement('div');
+                    paymentElement.className = `data-item ${statusClass}`;
+                    paymentElement.innerHTML = `
+                        <div class="data-info">
+                            <h4>${payment.userName}</h4>
+                            <p>Amount: ₦${payment.amount} | Status: ${payment.status.toUpperCase()}</p>
+                            <p>Transaction: ${payment.transactionId} | Date: ${payment.timestamp?.toDate().toLocaleDateString()}</p>
+                        </div>
+                    `;
+                    allPaymentsContainer.appendChild(paymentElement);
+                });
+            }
         }
     } catch (error) {
         console.error('Error loading admin data:', error);

@@ -47,19 +47,14 @@
     </script>
 </head>
 <body>
-    <!-- Splash Screen -->
-    <div id="splash-screen" class="screen">
-        <div class="splash-container">
-            <div class="splash-top">Prof Zulum AI Institute</div>
-            <div class="splash-middle">POWERED BY NEXUS FORGE</div>
-            <div class="splash-bottom">Empowering Future AI Leaders</div>
-        </div>
-    </div>
-
     <!-- Login Screen -->
-    <div id="login-screen" class="screen hidden">
+    <div id="login-screen" class="screen">
         <div class="login-header">
-            <div class="logo">Prof Zulum AI</div>
+            <div class="logo-container">
+                <h1 class="logo-main">Prof Zulum AI Institute</h1>
+                <div class="logo-subtitle">POWERED BY NEXUS FORGE</div>
+                <div class="motto">Empowering Future AI Leaders</div>
+            </div>
         </div>
         <div class="login-container">
             <div class="login-card">
@@ -73,6 +68,10 @@
                     </div>
                     <button type="submit" class="login-btn">Login</button>
                 </form>
+                <div class="demo-credentials">
+                    <p><strong>Demo Admin:</strong> admin / 371384</p>
+                    <p><strong>Demo Student:</strong> student1 / password</p>
+                </div>
                 <div id="login-error" class="error-message hidden"></div>
             </div>
         </div>
@@ -83,6 +82,7 @@
         <header class="dashboard-header">
             <div class="header-left">
                 <h1>Student Dashboard</h1>
+                <div class="institute-name">Prof Zulum AI Institute</div>
             </div>
             <div class="header-right">
                 <span id="student-name">Welcome, Student</span>
@@ -105,13 +105,17 @@
             <div id="exams" class="tab-content active">
                 <div class="tab-header">
                     <h2>Computer Appreciation Examination</h2>
+                    <p>70 Questions - 30 Minutes</p>
                 </div>
                 <div id="exam-status" class="status-card">
                     <p>No available exams at the moment. Please check back later.</p>
                 </div>
                 <div id="exam-container" class="hidden">
                     <div class="exam-header">
-                        <div class="timer" id="exam-timer">30:00</div>
+                        <div class="timer-container">
+                            <div class="timer-label">Time Remaining:</div>
+                            <div class="timer" id="exam-timer">30:00</div>
+                        </div>
                         <button id="submit-exam" class="submit-btn">Submit Exam</button>
                     </div>
                     <div id="exam-questions" class="questions-container"></div>
@@ -122,13 +126,17 @@
             <div id="ca-test" class="tab-content">
                 <div class="tab-header">
                     <h2>Computer Appreciation Test</h2>
+                    <p>30 Questions - 20 Minutes</p>
                 </div>
                 <div id="ca-status" class="status-card">
                     <p>No available C.A Test at the moment. Please check back later.</p>
                 </div>
                 <div id="ca-container" class="hidden">
                     <div class="exam-header">
-                        <div class="timer" id="ca-timer">20:00</div>
+                        <div class="timer-container">
+                            <div class="timer-label">Time Remaining:</div>
+                            <div class="timer" id="ca-timer">20:00</div>
+                        </div>
                         <button id="submit-ca" class="submit-btn">Submit Test</button>
                     </div>
                     <div id="ca-questions" class="questions-container"></div>
@@ -139,6 +147,7 @@
             <div id="payment-status" class="tab-content">
                 <div class="tab-header">
                     <h2>Payment Status</h2>
+                    <p>View your current payment status and balance</p>
                 </div>
                 <div id="payment-status-content" class="status-card">
                     <p>Your payment status will appear here once confirmed by admin.</p>
@@ -149,6 +158,7 @@
             <div id="online-payment" class="tab-content">
                 <div class="tab-header">
                     <h2>Online Payment</h2>
+                    <p>Make payments for your courses and exams</p>
                 </div>
                 <div class="payment-card">
                     <div class="payment-details">
@@ -181,6 +191,7 @@
             <div id="payment-history" class="tab-content">
                 <div class="tab-header">
                     <h2>Payment History</h2>
+                    <p>View your complete payment history</p>
                 </div>
                 <div id="payment-history-content">
                     <p>No payment history available.</p>
@@ -194,9 +205,10 @@
         <header class="dashboard-header">
             <div class="header-left">
                 <h1>Admin Dashboard</h1>
+                <div class="institute-name">Prof Zulum AI Institute</div>
             </div>
             <div class="header-right">
-                <span>Welcome, Admin</span>
+                <span>Welcome, Administrator</span>
                 <button id="admin-logout" class="logout-btn">Logout</button>
             </div>
         </header>
@@ -241,7 +253,11 @@
 
                 <div class="admin-section">
                     <h3>User List</h3>
-                    <div id="user-list" class="data-list"></div>
+                    <div id="user-list" class="data-list">
+                        <div class="empty-state">
+                            <p>No users created yet. Create your first user above.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -251,14 +267,16 @@
                     <h3>Exam Controls</h3>
                     <div class="control-panel">
                         <div class="control-item">
-                            <label>
+                            <label class="toggle-label">
                                 <input type="checkbox" id="enable-exams">
+                                <span class="toggle-slider"></span>
                                 Enable Exams for All Students
                             </label>
                         </div>
                         <div class="control-item">
-                            <label>
+                            <label class="toggle-label">
                                 <input type="checkbox" id="enable-ca-test">
+                                <span class="toggle-slider"></span>
                                 Enable C.A Test for All Students
                             </label>
                         </div>
@@ -267,7 +285,11 @@
 
                 <div class="admin-section">
                     <h3>Student Exam Status</h3>
-                    <div id="exam-status-list" class="data-list"></div>
+                    <div id="exam-status-list" class="data-list">
+                        <div class="empty-state">
+                            <p>No exam attempts recorded yet.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -275,12 +297,20 @@
             <div id="payment-management" class="tab-content">
                 <div class="admin-section">
                     <h3>Pending Payment Requests</h3>
-                    <div id="pending-payments" class="data-list"></div>
+                    <div id="pending-payments" class="data-list">
+                        <div class="empty-state">
+                            <p>No pending payment requests.</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="admin-section">
                     <h3>Payment History</h3>
-                    <div id="all-payments" class="data-list"></div>
+                    <div id="all-payments" class="data-list">
+                        <div class="empty-state">
+                            <p>No payment history available.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
